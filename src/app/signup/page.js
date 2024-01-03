@@ -14,24 +14,25 @@ const page = () => {
 
     async function handleFormSubmit(e) {
         e.preventDefault();
-        setCreatingUser(true);
-        setError(false);
-        const response = await axios.post('/api/signup', { email, password }, {
-            headers: {
-                'Content-Type': 'application/json'
+        try {
+            setCreatingUser(true);
+            setError(false);
+            const response = await axios.post('/api/signup', { email, password }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (response.ok){
+                userCreated(true)
+            } else  {
+                setError(true);
             }
-        });
-        if (response.ok){
-            userCreated(true)
-        } else  {
-            setError(true);
+            setCreatingUser(false);
+        } catch (error) {
+            console.log(error)
         }
-        setCreatingUser(false);
-        
-
-
-
-
+ 
     }
 
 
