@@ -3,22 +3,28 @@ import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react'
-import {signIn} from "next-auth/react"
-import { redirect } from 'next/dist/server/api-utils';
+import { useRouter } from 'next/navigation';
+import { signInWithPopup } from 'firebase/auth'
+import { Auth } from '@/models/fireBase_connect';
+import { Provider } from '@/models/fireBase_connect';
 
 const page = () => {
+    const router = useRouter()
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loginInProgress, setLoginInProgress] = useState(false)
 
-    async function handleFormSubmit(e) {
+   
+    const signIn=async(e)=> {
         e.preventDefault();
-        setLoginInProgress(true);
-       
-        await signIn('credentials', {email, password, callbackUrl:"/"});
-
-        setLoginInProgress(false);        
-        
+        try {
+            await signInWithPopup(Auth, Provider);
+            console.log("Login successful");
+            router.push('/');
+          } catch (err) {
+            console.error(err);
+          }
     }
     return (
         <section className='mt-8'>
@@ -26,15 +32,15 @@ const page = () => {
                 Login
             </h1>
 
-            <form className='block max-w-xs mx-auto ' onSubmit={handleFormSubmit}>
+            <form className='block max-w-xs mx-auto ' >
                 <input name='email' type="email" placeholder='email' value={email} onChange={e => setEmail(e.target.value)} disabled={loginInProgress} />
                 <input name='password' type="password" placeholder='password' value={password} onChange={e => setPassword(e.target.value)} disabled={loginInProgress} />
                 <button disabled={loginInProgress} type='submit'>Login</button>
                 <div className='my-4 text-center text-gray-500'>or login with provider</div>
                 <button type='button' className='flex gap-4 justify-center ' 
-                onClick={()=> signIn('google', {callbackUrl: "/"})}
+                onClick={signIn}
                  >
-                    <Image src={'/google.png'} alt={''} width={24} height={24} />
+                    <Image  alt={''} width={24} height={24} />
                     Login with Google
                 </button>
 

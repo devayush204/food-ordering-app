@@ -11,7 +11,7 @@ const page = () => {
     const [profileSaved, setProfileSaved] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     // console.log(session);
-    // console.log(userName);
+    console.log(userName);
     const { status } = session;
 
     useEffect(() => {

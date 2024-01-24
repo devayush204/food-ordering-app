@@ -1,17 +1,29 @@
 "use client"
-import { signOut, useSession } from 'next-auth/react'
+// import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import React from 'react'
+import { useAuthState } from "react-firebase-hooks/auth"
+import { signOut } from 'firebase/auth'
+import { useRouter } from 'next/navigation'
+import { Auth } from '@/models/fireBase_connect'
 
 const Header = () => {
-  const session = useSession();
+  const [user] = useAuthState(Auth)
+  const router = useRouter()
+
+  const logOut = async() =>{
+    await signOut(Auth)
+    router.push("/")
+}
+
+  // const session = useSession();
   // console.log(session)
-  const status = session?.status;
-  const userData = session.data?.user;
-  let userName = userData?.name || userData?.email;
-  if(userName && userName.includes(' ')) {
-    userName = userName.split(' ')[0];
-  }
+  // const status = session?.status;
+  // const userData = session.data?.user;
+  // let userName = userData?.name || userData?.email;
+  // if(userName && userName.includes(' ')) {
+  //   userName = userName.split(' ')[0];
+  // }
 
   return (
     <header className="flex items-center justify-between">
@@ -25,21 +37,20 @@ const Header = () => {
       </nav>
 
       <nav className='flex items-center gap-4 text-gray-500 font-semibold'>
-        {status === 'authenticated' && (
+        {user ?
           <>
-          <Link className='whitespace-nowrap' href={'/profile'}>Hello! {userName}</Link>
-          <button
-            onClick={()=> signOut()}
-            className='bg-primary rounded-full text-white px-8 py-2'>Logout</button>
-          </>
-        )}
-        {status === 'unauthenticated' && (
+            <Link className='whitespace-nowrap' href={'/profile'}>Hello! {user.displayName}</Link>
+            <button
+              onClick={logOut}
+              className='bg-primary rounded-full text-white px-8 py-2'>Logout</button>
+
+          </> :
           <>
             <Link href={'/login'}>Login</Link>
             <Link className="bg-primary rounded-2xl text-white px-8 py-2" href={'/signup'}>Signup</Link>
-
           </>
-        )}
+        }
+
       </nav>
     </header>
   )

@@ -1,39 +1,28 @@
 "use client"
 import axios from 'axios';
-import { signIn } from 'next-auth/react';
+import { Auth } from '@/models/fireBase_connect';
+import { Provider } from '@/models/fireBase_connect';
+import { signInWithPopup } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image'
 import Link from 'next/link';
 import React, { useState } from 'react'
 
 const page = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [creatingUser, setCreatingUser] = useState(false);
-    const [userCreated, setUserCreated] = useState(false);
-    const [error, setError] = useState(false);
+    const router = useRouter();
 
-    async function handleFormSubmit(e) {
-        e.preventDefault();
+    const signIn=async(e)=> {
         try {
-            setCreatingUser(true);
-            setError(false);
-            const response = await axios.post('/api/signup', { email, password }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (response.ok){
-                userCreated(true)
-            } else  {
-                setError(true);
-            }
-            setCreatingUser(false);
-        } catch (error) {
-            console.log(error)
-        }
- 
+            await signInWithPopup(Auth, Provider);
+            console.log("Login successful");
+            router.push('/');
+          } catch (err) {
+            console.error(err);
+          }
     }
+   
+
+    
 
 
     return (
@@ -41,7 +30,7 @@ const page = () => {
             <h1 className='text-center text-4xl text-primary mb-4'>
                 Signup
             </h1>
-            {userCreated && (
+            {/* {userCreated && (
                 <div className='my-4 text-center'>
                     User Created. <br /> Now you can
                     <Link className='ml-2 underline hover:text-primary' href={'/login'}>Login &raquo;</Link>
@@ -52,13 +41,13 @@ const page = () => {
                     Error. <br />
                     Pls try again.
                 </div>
-            )}
-            <form className='block max-w-xs mx-auto' onSubmit={handleFormSubmit}>
-                <input type="email" placeholder='email' value={email} onChange={e => setEmail(e.target.value)} disabled={creatingUser} />
-                <input type="password" placeholder='password' value={password} onChange={e => setPassword(e.target.value)} disabled={creatingUser} />
-                <button type='submit' disabled={creatingUser}>Signup</button>
+            )} */}
+            <form className='block max-w-xs mx-auto' >
+                <input type="email" placeholder='email'  onChange={e => setEmail(e.target.value)}  />
+                <input type="password" placeholder='password'  onChange={e => setPassword(e.target.value)} />
+                <button type='submit' >Signup</button>
                 <div className='my-4 text-center text-gray-500'>or sinup with provider</div>
-                <button onClick={()=> signIn('google', {callbackUrl: "/"})}>
+                <button onClick={signIn}>
                     <Image src={'/google.png'} alt={''} width={24} height={24} />
                     Signup with Google
                 </button>
