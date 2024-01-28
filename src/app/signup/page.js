@@ -7,11 +7,26 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image'
 import Link from 'next/link';
 import React, { useState } from 'react'
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+
 
 const page = () => {
     const router = useRouter();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const signIn=async(e)=> {
+    // function for signin with email and password
+    const signInPassword = async()=>{
+        try {
+            await createUserWithEmailAndPassword(Auth, email, password )
+        } catch (err) {
+            console.error(err)
+        }
+
+    }
+
+// signing with Provider(google)
+    const signInProvider=async(e)=> {
         try {
             await signInWithPopup(Auth, Provider);
             console.log("Login successful");
@@ -30,24 +45,13 @@ const page = () => {
             <h1 className='text-center text-4xl text-primary mb-4'>
                 Signup
             </h1>
-            {/* {userCreated && (
-                <div className='my-4 text-center'>
-                    User Created. <br /> Now you can
-                    <Link className='ml-2 underline hover:text-primary' href={'/login'}>Login &raquo;</Link>
-                </div>
-            )}
-            {error && (
-                <div className='my-4 text-center'>
-                    Error. <br />
-                    Pls try again.
-                </div>
-            )} */}
+           
             <form className='block max-w-xs mx-auto' >
                 <input type="email" placeholder='email'  onChange={e => setEmail(e.target.value)}  />
                 <input type="password" placeholder='password'  onChange={e => setPassword(e.target.value)} />
-                <button type='submit' >Signup</button>
+                <button onClick={signInPassword} >Signup</button>
                 <div className='my-4 text-center text-gray-500'>or sinup with provider</div>
-                <button onClick={signIn}>
+                <button onClick={signInProvider}>
                     <Image src={'/google.png'} alt={''} width={24} height={24} />
                     Signup with Google
                 </button>

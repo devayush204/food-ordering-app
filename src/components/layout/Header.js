@@ -1,5 +1,4 @@
 "use client"
-// import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import React from 'react'
 import { useAuthState } from "react-firebase-hooks/auth"
@@ -16,14 +15,7 @@ const Header = () => {
     router.push("/")
 }
 
-  // const session = useSession();
-  // console.log(session)
-  // const status = session?.status;
-  // const userData = session.data?.user;
-  // let userName = userData?.name || userData?.email;
-  // if(userName && userName.includes(' ')) {
-  //   userName = userName.split(' ')[0];
-  // }
+ 
 
   return (
     <header className="flex items-center justify-between">

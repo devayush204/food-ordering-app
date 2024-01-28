@@ -15,8 +15,10 @@ const page = () => {
     const [password, setPassword] = useState('');
     const [loginInProgress, setLoginInProgress] = useState(false)
 
-   
-    const signIn=async(e)=> {
+
+
+//    siging in with Provider(google)
+    const signInProvider=async(e)=> {
         e.preventDefault();
         try {
             await signInWithPopup(Auth, Provider);
@@ -38,7 +40,7 @@ const page = () => {
                 <button disabled={loginInProgress} type='submit'>Login</button>
                 <div className='my-4 text-center text-gray-500'>or login with provider</div>
                 <button type='button' className='flex gap-4 justify-center ' 
-                onClick={signIn}
+                onClick={signInProvider}
                  >
                     <Image  alt={''} width={24} height={24} />
                     Login with Google
