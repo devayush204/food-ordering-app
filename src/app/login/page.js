@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { signInWithPopup } from 'firebase/auth'
 import { Auth } from '@/models/fireBase_connect';
 import { Provider } from '@/models/fireBase_connect';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const page = () => {
     const router = useRouter()
@@ -16,6 +17,16 @@ const page = () => {
     const [loginInProgress, setLoginInProgress] = useState(false)
 
 
+//    siging in with email and password
+const signInPassword = async ()=>{
+    e.preventDefault();
+    try {
+        await signInWithEmailAndPassword(Auth, email, password)
+        console.log("signed in successfully")
+    } catch (err) {
+        console.error(err)
+    }
+}
 
 //    siging in with Provider(google)
     const signInProvider=async(e)=> {
@@ -26,6 +37,7 @@ const page = () => {
             router.push('/');
           } catch (err) {
             console.error(err);
+            console.log("faiked")
           }
     }
     return (
@@ -37,12 +49,12 @@ const page = () => {
             <form className='block max-w-xs mx-auto ' >
                 <input name='email' type="email" placeholder='email' value={email} onChange={e => setEmail(e.target.value)} disabled={loginInProgress} />
                 <input name='password' type="password" placeholder='password' value={password} onChange={e => setPassword(e.target.value)} disabled={loginInProgress} />
-                <button disabled={loginInProgress} type='submit'>Login</button>
+                <button disabled={loginInProgress}  type='submit'>Login</button>
                 <div className='my-4 text-center text-gray-500'>or login with provider</div>
                 <button type='button' className='flex gap-4 justify-center ' 
                 onClick={signInProvider}
                  >
-                    <Image  alt={''} width={24} height={24} />
+                    <Image src={'/google.png'} alt={''} width={24} height={24} />
                     Login with Google
                 </button>
 
