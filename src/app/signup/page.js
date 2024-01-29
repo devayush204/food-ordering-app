@@ -1,26 +1,26 @@
 "use client"
-import axios from 'axios';
 import { Auth } from '@/models/fireBase_connect';
 import { Provider } from '@/models/fireBase_connect';
 import { signInWithPopup } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image'
 import Link from 'next/link';
 import React, { useState } from 'react'
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { db } from '@/models/fireBase_connect';
 import { addDoc, collection } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
 
 const page = () => {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const dataCollectionref = collection(db, "test");
+    // const dataCollectionref = collection(db, "test");
 
 
     // function for signin with email and password
-    const signInPassword = async () => {
+    const signInPassword = async (e) => {
+        e.preventDefault(); // prevent the form from submitting
         try {
             await createUserWithEmailAndPassword(Auth, email, password)
             console.log("signed up successfully")
@@ -32,24 +32,25 @@ const page = () => {
 
     // signing with Provider(google)
     const signInProvider = async (e) => {
+        e.preventDefault(); // prevent the form from submitting
         try {
             await signInWithPopup(Auth, Provider);
             console.log("Login successful");
             router.push('/');
         } catch (err) {
-            console.error(err);
+            console.error(err.message);
         }
     }
 
     //storing user data to firestore
-    const submitData = async () => {
-        try {
-            await addDoc(dataCollectionref, {userEmail: email, userPassword: password})
-            console.log("Login successful");
-        } catch (err) {
-            console.error(err)
-        }
-    }
+    // const submitData = async () => {
+    //     try {
+    //         await addDoc(dataCollectionref, {userEmail: email, userPassword: password})
+    //         console.log("Login successful");
+    //     } catch (err) {
+    //         console.error(err)
+    //     }
+    // }
 
 
 
