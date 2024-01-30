@@ -1,9 +1,11 @@
 // Import the functions you need from the SDKs you need
+"use client"
 import { initializeApp } from "firebase/app";
 import {getAuth} from "firebase/auth"
 import { GoogleAuthProvider } from "firebase/auth";
 import {getFirestore} from "firebase/firestore"
 import {getStorage} from "firebase/storage"
+import { createContext } from "react";
 
 
 const firebaseConfig = {
@@ -16,6 +18,8 @@ const firebaseConfig = {
   measurementId: "G-N7E3C5DPKC"
 };
 
+
+const FirebaseContext = createContext(null);
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
@@ -23,6 +27,12 @@ const Auth = getAuth(app)
 const Provider = new GoogleAuthProvider()
 const db = getFirestore(app)
 const storage = getStorage(app)
+
+
+
+export const FirebaseProvider = (props) =>{
+  return <FirebaseContext.Provider>{props.children}</FirebaseContext.Provider>
+}
 
 
 export {Auth, Provider, db, storage};

@@ -1,11 +1,11 @@
 "use client"
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useAuthState } from "react-firebase-hooks/auth"
-import { signOut } from 'firebase/auth'
+import {  signOut } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { Auth } from '@/models/fireBase_connect'
-import Image from 'next/image'
+// import Image from 'next/image'
 
 const Header = () => {
   const [user] = useAuthState(Auth)
@@ -15,6 +15,8 @@ const Header = () => {
     await signOut(Auth)
     router.push("/")
   }
+
+  
 
 
 
@@ -33,8 +35,12 @@ const Header = () => {
         {user ?
           <>
             <div className='flex gap-1 items-center justify-center'>
-              <Image width={35} height={35} className="rounded-full" src={user.photoURL} alt="pfp" />
-              <Link className='whitespace-nowrap' href={'/profile'}> {user.displayName}</Link>
+              {/* this showing eroor when I try to add image */}
+              {/* <Image width={35} height={35} className="rounded-full" src={user?.photoURL} alt="pfp" /> */}
+              <img src={user?.photoURL} className='w-[35px] h-[35px] rounded-full' alt="" />
+              <Link className='whitespace-nowrap' href={'/profile'}>
+                {user?.displayName || (user?.email && user?.email.split('@')[0])}
+              </Link>
             </div>
             <button
               onClick={logOut}

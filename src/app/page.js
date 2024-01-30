@@ -1,9 +1,19 @@
+"use client"
 import Hero from "@/components/layout/Hero";
 import HomeMenu from "@/components/layout/HomeMenu";
 import SectionHeaders from "@/components/layout/SectionHeaders";
+import { Auth } from "@/models/fireBase_connect";
+import { useAuthState } from "react-firebase-hooks/auth";
+
 
 
 export default function Home() {
+
+  // displaying user details 
+  // const [user] = useAuthState(Auth);
+  // console.log(user)
+
+
   return (
     <>
       <Hero />

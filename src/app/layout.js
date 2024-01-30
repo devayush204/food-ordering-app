@@ -1,6 +1,7 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/layout/Header'
+import { FirebaseProvider } from '@/models/fireBase_connect'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -14,8 +15,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <main className='max-w-4xl mx-auto px-4 py-3'>
-          <Header />
-          {children} 
+          <FirebaseProvider>
+            <Header />
+            {children}
+          </FirebaseProvider>
         </main>
       </body>
     </html>
