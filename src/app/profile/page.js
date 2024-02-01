@@ -24,6 +24,7 @@ const page = () => {
     });
     const [originalDeliveryAddress, setOriginalDeliveryAddress] = useState({});
     const [isAdmin , setIsAdmin] = useState(false)
+    const [isLoading, setIsLoading] = useState(false);
 
 
     //handler functions
