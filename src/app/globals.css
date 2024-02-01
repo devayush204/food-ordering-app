@@ -43,7 +43,7 @@ div.tabs > *.active{
     @apply border-primary bg-primary text-white rounded-full;
 }
 label{
-    @apply text-gray-500 text-sm leading-tight;
+    @apply text-gray-500 text-sm leading-tight px-2;
 }
 label + input{
     margin-top: -2px;
