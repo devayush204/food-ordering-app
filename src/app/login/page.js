@@ -11,7 +11,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 
-const page = () => {
+const LoginPage = () => {
     const router = useRouter()
     const [user] = useAuthState(Auth);
 
@@ -107,4 +107,4 @@ const signInPassword = async (e) => {
     )
 }
 
-export default page
+export default LoginPage

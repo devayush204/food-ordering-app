@@ -8,7 +8,7 @@ import Link from 'next/link';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 
-const newMenuItemsPage = () => {
+const NewMenuItemsPage = () => {
     const [itemName, setItemName] = useState('');
     const [description, setDescription] = useState('');
     const [basePrice, setBasePrice] = useState('');
@@ -184,4 +184,4 @@ const newMenuItemsPage = () => {
     )
 }
 
-export default newMenuItemsPage
+export default NewMenuItemsPage

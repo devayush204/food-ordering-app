@@ -6,7 +6,7 @@ import { addDoc, collection, doc, getDocs, updateDoc } from 'firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 
-const categories = () => {
+const CategoriesPage = () => {
   const [categoryName, setCategoryName] = useState('');
   const [categories, setCategories] = useState([]);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -165,4 +165,4 @@ const categories = () => {
   )
 }
 
-export default categories
+export default CategoriesPage

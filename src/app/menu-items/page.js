@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 
 
-const page = () => {
+const MenuItems = () => {
     const [menuItems, setMenuItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [user] = useAuthState(Auth);
@@ -70,4 +70,4 @@ const page = () => {
     )
 }
 
-export default page
+export default MenuItems
