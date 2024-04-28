@@ -29,7 +29,7 @@ export default function Home() {
 
       <section className="text-center">
         <SectionHeaders subHeader={'order here again'} mainHeader={'Contact Us'} />
-        <a href="tel:+9170561984874">+917056284757</a>
+        <a href="tel:+9170561984874">+91 7015842605</a>
       </section>
     </>
 

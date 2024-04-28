@@ -12,21 +12,30 @@ const Page = () => {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false); 
 
     // Function to add user data to Firestore
-    const addUserDataToFirestore = async (userId, userEmail, userPassword , username, photoURL) => {
+    const addUserDataToFirestore = async (userId, userEmail, userPassword, username, photoURL, isAdmin) => {
         const usersCollectionRef = collection(db, 'users');
 
-        // Add user data to Firestore
-        await addDoc(usersCollectionRef, {
-            userId,
-            userEmail,
-            userPassword,
-            username,
-            photoURL,
-        });
+        // Use the user's UID as the document ID
+        const userDocRef = doc(usersCollectionRef, userId);
 
-        console.log("User data added to Firestore");
+        try {
+            // Add user data to Firestore
+            await setDoc(userDocRef, {
+                userId,
+                userEmail,
+                userPassword,
+                username,
+                photoURL,
+                isAdmin, // Include isAdmin field in Firestore document
+            });
+
+            console.log("User data added to Firestore");
+        } catch (error) {
+            console.error("Error adding user data to Firestore:", error);
+        }
     };
 
     // useEffect to handle onAuthStateChanged event
@@ -40,10 +49,10 @@ const Page = () => {
                     const { displayName, photoURL } = user.providerData[0];
 
                     // Store user data in Firestore
-                    addUserDataToFirestore(user.uid, user.email, password, displayName || username, photoURL);
+                    addUserDataToFirestore(user.uid, user.email, password, displayName || username, photoURL, isAdmin);
                 } else {
                     // Store user data in Firestore for email/password signup
-                    addUserDataToFirestore(user.uid, user.email, password, username, null);
+                    addUserDataToFirestore(user.uid, user.email, password, username, null, isAdmin);
                 }
             }
         });
@@ -65,6 +74,11 @@ const Page = () => {
         } catch (err) {
             console.error(err);
         }
+    };
+
+    // function to handle checkbox change
+    const handleCheckboxChange = (e) => {
+        setIsAdmin(e.target.checked); // Update isAdmin state based on checkbox value
     };
 
     // signing with Provider(google)
@@ -92,7 +106,13 @@ const Page = () => {
             <form className='block max-w-xs mx-auto' >
                 <input type="email" placeholder='email' onChange={e => setEmail(e.target.value)} value={email} />
                 <input type="password" placeholder='password' onChange={e => setPassword(e.target.value)} value={password} />
-                <button onClick={signUpWithEmailPassword}>Signup</button>
+                 
+                <label className='flex flow-row items-center py-2 gap-2'>
+                    <input type="checkbox" onChange={handleCheckboxChange} checked={isAdmin} />
+                    <p>Are you a admin?</p>
+                </label>
+                
+                <button type='submit' onClick={signUpWithEmailPassword}>Signup</button>
                 <div className='my-4 text-center text-gray-500'>or signup with provider</div>
                 <button onClick={signUpWithGoogle}>
                     <Image src={'/google.png'} alt={''} width={24} height={24} />

@@ -6,7 +6,8 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: '*.googleusercontent.com',
             }
-        ]
+        ],
+        domains: ['firebasestorage.googleapis.com'],
     }
 }
 

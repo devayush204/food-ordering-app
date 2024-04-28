@@ -9,13 +9,13 @@ import { createContext } from "react";
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCsXVIYXUTgFen3eFQvxWm1uH9YZAnJnEw",
-  authDomain: "food-ordering-409518.firebaseapp.com",
-  projectId: "food-ordering-409518",
-  storageBucket: "food-ordering-409518.appspot.com",
-  messagingSenderId: "393752623606",
-  appId: "1:393752623606:web:0d5a999edb0c67dcf4efd7",
-  measurementId: "G-N7E3C5DPKC"
+  apiKey: "AIzaSyB9L4rKnJkVnhxH37jtWkQg3ZUpr70hpKo",
+  authDomain: "food-delivery-c2529.firebaseapp.com",
+  projectId: "food-delivery-c2529",
+  storageBucket: "food-delivery-c2529.appspot.com",
+  messagingSenderId: "908402711215",
+  appId: "1:908402711215:web:61be89fc00d4303440125a",
+  measurementId: "G-V5JLW5LJDG"
 };
 
 

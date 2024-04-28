@@ -2,9 +2,10 @@
 import Link from 'next/link'
 import React, { useEffect } from 'react'
 import { useAuthState } from "react-firebase-hooks/auth"
-import {  signOut } from 'firebase/auth'
+import { signOut } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { Auth } from '@/models/fireBase_connect'
+import Cart from '../icons/Cart'
 // import Image from 'next/image'
 
 const Header = () => {
@@ -16,7 +17,7 @@ const Header = () => {
     router.push("/")
   }
 
-  
+
 
 
 
@@ -52,6 +53,9 @@ const Header = () => {
             <Link className="bg-primary rounded-2xl text-white px-8 py-2" href={'/signup'}>Signup</Link>
           </>
         }
+        <a href="/cart">  
+          <Cart />
+        </a>
 
       </nav>
     </header>

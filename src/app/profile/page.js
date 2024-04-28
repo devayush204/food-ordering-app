@@ -4,13 +4,14 @@ import { Auth, db, storage } from '@/models/fireBase_connect'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import Image from 'next/image'
 import Link from 'next/link'
-import { updateProfile } from 'firebase/auth'
+import { onAuthStateChanged, updateProfile } from 'firebase/auth'
 import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import Router from 'next/router'
+import { usePathname, useRouter } from 'next/navigation'
+import UserTabs from '@/components/layout/UserTabs'
 
-const page = () => {
-
-    //states used in the page
+const Page = () => {
     const [user, loading, error] = useAuthState(Auth);
     const [newUsername, setNewUsername] = useState(user?.email.split('@')[0] || '');
     const [newPhotoURL, setNewPhotoURL] = useState('');
@@ -23,14 +24,57 @@ const page = () => {
         country: '',
     });
     const [originalDeliveryAddress, setOriginalDeliveryAddress] = useState({});
-    const [isAdmin , setIsAdmin] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const pathname = usePathname();
+
+    // Add authentication state change listener
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(Auth, (authUser) => {
+            if (authUser) {
+                // User is signed in
+                console.log('User is signed in:', authUser);
+            } else {
+                // User is signed out
+                console.log('User is signed out');
+            }
+        });
+
+        return () => {
+            // Unsubscribe from the listener when the component unmounts
+            unsubscribe();
+        };
+    }, []);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                if (user) {
+                    const userDocRef = doc(db, 'users', Auth.currentUser.uid);
+                    const userDocSnapshot = await getDoc(userDocRef);
+
+                    if (userDocSnapshot.exists()) {
+                        const userData = userDocSnapshot.data();
+                        const isAdmin = userData.isAdmin || false;
+                        // console.log('isAdmin:', isAdmin);
+                        setIsAdmin(isAdmin);
+                    } else {
+                        console.log('No such document!');
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, [user]);
 
 
-    //handler functions
     const handleUsernameChange = (e) => {
         setNewUsername(e.target.value);
     };
+
     const handlePhotoURLChange = (e) => {
         setNewPhotoURL(e.target.value);
     };
@@ -39,54 +83,23 @@ const page = () => {
         setIsEditing(true);
         setOriginalDeliveryAddress({ ...deliveryAddress })
     }
+
     const handleCancelEdit = () => {
         setIsEditing(false);
         setDeliveryAddress({ ...originalDeliveryAddress });
     };
-    
 
-    //cheching if user's a admin or not
-    useEffect(() => {
-        const fetchUserData = async () => {
-          try {
-            if (user) {
-              const userDocRef = doc(db, 'users', Auth.currentUser.uid);
-              const userDocSnapshot = await getDoc(userDocRef);
-              console.log(userDocSnapshot)
-    
-              if (userDocSnapshot.exists()) {
-                const userData = userDocSnapshot.data();
-                
-                // Check if the user has admin privileges
-                const userIsAdmin = userData?.admin || false;
-                
-                setIsAdmin(userIsAdmin);
-              }
-            }
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-          }
-        };
-    
-        fetchUserData();
-      }, [user]); 
-
-    //handle to save delivery address
     const handleSaveAddressChanges = async (e) => {
         e.preventDefault();
-
         try {
-            // Update user data in Firestore
             const userDocRef = doc(db, 'users', Auth.currentUser.uid);
             const userDocSnapshot = await getDoc(userDocRef);
 
             if (userDocSnapshot.exists()) {
-                // Reference to the deliveryAddress subcollection
                 const deliveryAddressCollectionRef = collection(userDocRef, 'deliveryAddress');
-
-                // Create or update the document data in the address collection
-                await setDoc(deliveryAddressCollectionRef, { ...deliveryAddress });
-                console.log('Delivery address changes saved in Firestore');
+                // Create a copy of the delivery address before updating it
+                const updatedDeliveryAddress = { ...deliveryAddress };
+                await setDoc(deliveryAddressCollectionRef, updatedDeliveryAddress);
             }
 
             setIsEditing(false);
@@ -97,7 +110,6 @@ const page = () => {
     };
 
 
-    //user can change photo
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -105,14 +117,10 @@ const page = () => {
             const uploadTask = uploadBytes(storageRef, file);
 
             try {
-                // Wait for the upload to complete and get the download URL
                 const snapshot = await uploadTask;
                 const downloadURL = await getDownloadURL(snapshot.ref);
-
-                // Set the new photoURL state
                 setNewPhotoURL(downloadURL);
 
-                // Optionally, update the photoURL in Firestore
                 const userDocRef = doc(db, 'users', Auth.currentUser.uid);
                 await setDoc(userDocRef, {
                     photoURL: downloadURL,
@@ -128,7 +136,6 @@ const page = () => {
     const handleSaveChanges = async (e) => {
         e.preventDefault();
         try {
-            // Update user data in Firestore
             const userDocRef = doc(db, 'users', Auth.currentUser.uid);
             const userDocSnapshot = await getDoc(userDocRef);
 
@@ -139,12 +146,10 @@ const page = () => {
                     username: newUsername,
                     photoURL: newPhotoURL || user?.photoURL || null,
                 });
-                console.log('Profile changes saved in Firestore');
             }
 
-            // Update user profile in Firebase Authentication
             await updateProfile(Auth.currentUser, { displayName: newUsername, photoURL: newPhotoURL });
-            console.log('Profile changes saved in Firebase Authentication');
+            console.log('Profile changes saved in Firestore');
         } catch (err) {
             console.error(err);
         }
@@ -159,35 +164,24 @@ const page = () => {
         return <p>Error while loading user data. Please try again later.</p>;
     }
 
-    // Check if the user is authenticated
     if (!user) {
-        // Redirect or show a login page, or handle the scenario where the user is not logged in
-        return (<div className='text-center mt-20'>
-            <p>Your are not signed in...</p>
-            <Link href={"/signup"} className='px-4 py-1.5 bg-red-600 text-[14px] text-white font-semibold'>Sign in</Link>
-        </div>)
+        return (
+            <div className='text-center mt-20'>
+                <p>Your are not signed in...</p>
+                <Link href={"/signup"} className='px-4 py-1.5 bg-red-600 text-[14px] text-white font-semibold'>Sign in</Link>
+            </div>
+        );
     }
-
 
     return (
         <section className='mt-8'>
-            <div className='inline-flex mx-auto gap-2 tabs'>
-                <Link className={'active'} href={'/profile'}>Profile</Link>
-                {isAdmin && (
-                    <>
-                        <Link href={'/categories'}>Categories</Link>
-                        <Link href={'/menu-items'}>Menu Items</Link>
-                        <Link href={'/users'}>Users</Link>
-                    </>
-                )}
-            </div>
+            <UserTabs/>
+
 
             <div className='max-w-md mx-auto mt-8'>
-
                 <div className='flex gap-6 items-center'>
                     <div className='bg-zinc-200 px-5 py-2 rounded-xl gap-3 flex flex-col '>
                         <div>
-                            {/* <Image className='rounded-full' src={user?.photoURL} width={110} height={110} /> */}
                             <img src={newPhotoURL || user?.photoURL} className='rounded-full w-[140px] h-[90px]' alt="" />
                         </div>
 
@@ -265,14 +259,14 @@ const page = () => {
                         onChange={(e) => setDeliveryAddress({ ...deliveryAddress, country: e.target.value })}
                         disabled={!isEditing} />
                     <div className='flex justify-end items-center gap-4'>
-
                         {isEditing && (
                             <button type='submit' className='w-[50%]' onClick={handleSaveAddressChanges}>Save</button>
                         )}
                     </div>
                 </form>
             </div>
-        </section>)
+        </section>
+    );
 }
 
-export default page
+export default Page;
